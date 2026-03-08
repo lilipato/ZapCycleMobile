@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, ScrollView, SafeAreaView, TouchableOpacity, Dimensions } from "react-native";
 import tw from "twrnc";
 import { Feather } from "@expo/vector-icons";
@@ -32,6 +32,8 @@ const recentActivity = [
 ];
 
 export default function DashboardScreen({ navigation }) {
+    const [dashboardView, setDashboardView] = useState("overview");
+
     const getBadgeStyle = (status) => {
         switch (status) {
             case "active": return tw`bg-green-100 text-green-700`;
@@ -65,104 +67,127 @@ export default function DashboardScreen({ navigation }) {
                     </TouchableOpacity>
                 </View>
 
-                {/* Stats */}
-                <View style={tw`mb-2`}>
-                    <StatCard iconName="refresh-cw" label="Total Cycles" value="1,284" change="12%" positive colorClass="bg-green-500" />
-                    <StatCard iconName="users" label="Active Users" value="348" change="8%" positive colorClass="bg-blue-500" />
-                    <StatCard iconName="zap" label="Energy Saved (kWh)" value="9,420" change="5%" positive colorClass="bg-yellow-400" />
-                    <StatCard iconName="trending-up" label="Revenue" value="₱84,500" change="3%" positive={false} colorClass="bg-purple-500" />
+                {/* View Toggle */}
+                <View style={tw`flex-row bg-gray-200 p-1 rounded-xl mb-6`}>
+                    <TouchableOpacity
+                        onPress={() => setDashboardView("overview")}
+                        style={[tw`flex-1 py-2 rounded-lg items-center shadow-sm`, dashboardView === "overview" ? tw`bg-white` : tw`bg-transparent shadow-none`]}
+                    >
+                        <Text style={[tw`font-semibold text-sm`, dashboardView === "overview" ? tw`text-gray-900` : tw`text-gray-500`]}>Overview</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => setDashboardView("analytics")}
+                        style={[tw`flex-1 py-2 rounded-lg items-center shadow-sm`, dashboardView === "analytics" ? tw`bg-white` : tw`bg-transparent shadow-none`]}
+                    >
+                        <Text style={[tw`font-semibold text-sm`, dashboardView === "analytics" ? tw`text-gray-900` : tw`text-gray-500`]}>Analytics</Text>
+                    </TouchableOpacity>
                 </View>
 
-                {/* Line Chart */}
-                <View style={tw`bg-white rounded-2xl p-5 shadow-sm border border-gray-100 mb-6`}>
-                    <Text style={tw`text-base font-bold text-gray-900 mb-1`}>Cycles Over Time</Text>
-                    <Text style={tw`text-xs text-gray-400 mb-4`}>Monthly cycle completions</Text>
-                    <View style={tw`items-center`}>
-                        <LineChart
-                            data={cyclesData}
-                            width={screenWidth - 88}
-                            height={220}
-                            chartConfig={chartConfig}
-                            bezier
-                            style={tw`rounded-xl`}
-                            withDots={false}
-                            withHorizontalLabels={true}
-                            withInnerLines={false}
-                        />
-                    </View>
-                </View>
-
-                {/* Pie Chart */}
-                <View style={tw`bg-white rounded-2xl p-5 shadow-sm border border-gray-100 mb-6`}>
-                    <Text style={tw`text-base font-bold text-gray-900 mb-1`}>Unit Status</Text>
-                    <Text style={tw`text-xs text-gray-400 mb-4`}>Current fleet breakdown</Text>
-                    <PieChart
-                        data={statusData}
-                        width={screenWidth - 88}
-                        height={180}
-                        chartConfig={chartConfig}
-                        accessor={"population"}
-                        backgroundColor={"transparent"}
-                        paddingLeft={"15"}
-                        center={[10, 0]}
-                        absolute
-                    />
-                </View>
-
-                {/* Bar Chart */}
-                <View style={tw`bg-white rounded-2xl p-5 shadow-sm border border-gray-100 mb-6`}>
-                    <Text style={tw`text-base font-bold text-gray-900 mb-1`}>Daily Energy (kWh)</Text>
-                    <Text style={tw`text-xs text-gray-400 mb-4`}>This week's consumption</Text>
-                    <View style={tw`items-center`}>
-                        <BarChart
-                            data={energyData}
-                            width={screenWidth - 88}
-                            height={220}
-                            yAxisLabel=""
-                            yAxisSuffix=""
-                            chartConfig={chartConfig}
-                            style={tw`rounded-xl`}
-                            showBarTops={false}
-                            fromZero={true}
-                        />
-                    </View>
-                </View>
-
-                {/* Recent Activity */}
-                <View style={tw`bg-white rounded-2xl p-5 shadow-sm border border-gray-100 mb-4`}>
-                    <View style={tw`flex-row justify-between items-center mb-5`}>
-                        <View>
-                            <Text style={tw`text-base font-bold text-gray-900`}>Recent Activity</Text>
-                            <Text style={tw`text-xs text-gray-400`}>Latest user actions</Text>
+                {/* Main Content Render Based on State */}
+                {dashboardView === "overview" ? (
+                    <>
+                        {/* Stats */}
+                        <View style={tw`mb-2`}>
+                            <StatCard iconName="refresh-cw" label="Total Cycles" value="1,284" change="12%" positive colorClass="bg-green-500" />
+                            <StatCard iconName="users" label="Active Users" value="348" change="8%" positive colorClass="bg-blue-500" />
+                            <StatCard iconName="zap" label="Energy Saved (kWh)" value="9,420" change="5%" positive colorClass="bg-yellow-400" />
+                            <StatCard iconName="trending-up" label="Revenue" value="₱84,500" change="3%" positive={false} colorClass="bg-purple-500" />
                         </View>
-                        <TouchableOpacity>
-                            <Text style={tw`text-sm font-semibold text-green-600`}>View All</Text>
-                        </TouchableOpacity>
-                    </View>
 
-                    {recentActivity.map((item, index) => (
-                        <View key={item.id} style={tw`flex-row items-center py-3.5 ${index !== recentActivity.length - 1 ? 'border-b border-gray-50' : ''}`}>
-                            <View style={tw`w-10 h-10 bg-gray-50 rounded-xl items-center justify-center mr-3 border border-gray-100`}>
-                                <Feather name="user" size={18} color="#6b7280" />
-                            </View>
-                            <View style={tw`flex-1`}>
-                                <Text style={tw`text-sm font-bold text-gray-800`}>{item.user}</Text>
-                                <Text style={tw`text-xs text-gray-500 mt-0.5`}>{item.action} • {item.id}</Text>
-                            </View>
-                            <View style={tw`items-end`}>
-                                <Text style={tw`text-xs text-gray-400 mb-1.5`}>{item.time}</Text>
-                                <View style={[tw`px-2.5 py-1 rounded-full`, getBadgeStyle(item.status)]}>
-                                    <Text style={[
-                                        tw`text-[10px] font-bold uppercase`,
-                                        item.status === 'active' ? tw`text-green-700` : item.status === 'done' ? tw`text-blue-700` : tw`text-purple-700`
-                                    ]}>
-                                        {item.status}
-                                    </Text>
+                        {/* Recent Activity */}
+                        <View style={tw`bg-white rounded-2xl p-5 shadow-sm border border-gray-100 mb-4 mt-4`}>
+                            <View style={tw`flex-row justify-between items-center mb-5`}>
+                                <View>
+                                    <Text style={tw`text-base font-bold text-gray-900`}>Recent Activity</Text>
+                                    <Text style={tw`text-xs text-gray-400`}>Latest user actions</Text>
                                 </View>
+                                <TouchableOpacity>
+                                    <Text style={tw`text-sm font-semibold text-green-600`}>View All</Text>
+                                </TouchableOpacity>
+                            </View>
+
+                            {recentActivity.map((item, index) => (
+                                <View key={item.id} style={tw`flex-row items-center py-3.5 ${index !== recentActivity.length - 1 ? 'border-b border-gray-50' : ''}`}>
+                                    <View style={tw`w-10 h-10 bg-gray-50 rounded-xl items-center justify-center mr-3 border border-gray-100`}>
+                                        <Feather name="user" size={18} color="#6b7280" />
+                                    </View>
+                                    <View style={tw`flex-1`}>
+                                        <Text style={tw`text-sm font-bold text-gray-800`}>{item.user}</Text>
+                                        <Text style={tw`text-xs text-gray-500 mt-0.5`}>{item.action} • {item.id}</Text>
+                                    </View>
+                                    <View style={tw`items-end`}>
+                                        <Text style={tw`text-xs text-gray-400 mb-1.5`}>{item.time}</Text>
+                                        <View style={[tw`px-2.5 py-1 rounded-full`, getBadgeStyle(item.status)]}>
+                                            <Text style={[
+                                                tw`text-[10px] font-bold uppercase`,
+                                                item.status === 'active' ? tw`text-green-700` : item.status === 'done' ? tw`text-blue-700` : tw`text-purple-700`
+                                            ]}>
+                                                {item.status}
+                                            </Text>
+                                        </View>
+                                    </View>
+                                </View>
+                            ))}
+                        </View>
+                    </>
+                ) : (
+                    <>
+                        {/* Line Chart */}
+                        <View style={tw`bg-white rounded-2xl p-5 shadow-sm border border-gray-100 mb-6`}>
+                            <Text style={tw`text-base font-bold text-gray-900 mb-1`}>Cycles Over Time</Text>
+                            <Text style={tw`text-xs text-gray-400 mb-4`}>Monthly cycle completions</Text>
+                            <View style={tw`items-center`}>
+                                <LineChart
+                                    data={cyclesData}
+                                    width={screenWidth - 88}
+                                    height={220}
+                                    chartConfig={chartConfig}
+                                    bezier
+                                    style={tw`rounded-xl`}
+                                    withDots={false}
+                                    withHorizontalLabels={true}
+                                    withInnerLines={false}
+                                />
                             </View>
                         </View>
-                    ))}
-                </View>
+
+                        {/* Pie Chart */}
+                        <View style={tw`bg-white rounded-2xl p-5 shadow-sm border border-gray-100 mb-6`}>
+                            <Text style={tw`text-base font-bold text-gray-900 mb-1`}>Unit Status</Text>
+                            <Text style={tw`text-xs text-gray-400 mb-4`}>Current fleet breakdown</Text>
+                            <PieChart
+                                data={statusData}
+                                width={screenWidth - 88}
+                                height={180}
+                                chartConfig={chartConfig}
+                                accessor={"population"}
+                                backgroundColor={"transparent"}
+                                paddingLeft={"15"}
+                                center={[10, 0]}
+                                absolute
+                            />
+                        </View>
+
+                        {/* Bar Chart */}
+                        <View style={tw`bg-white rounded-2xl p-5 shadow-sm border border-gray-100 mb-6`}>
+                            <Text style={tw`text-base font-bold text-gray-900 mb-1`}>Daily Energy (kWh)</Text>
+                            <Text style={tw`text-xs text-gray-400 mb-4`}>This week's consumption</Text>
+                            <View style={tw`items-center`}>
+                                <BarChart
+                                    data={energyData}
+                                    width={screenWidth - 88}
+                                    height={220}
+                                    yAxisLabel=""
+                                    yAxisSuffix=""
+                                    chartConfig={chartConfig}
+                                    style={tw`rounded-xl`}
+                                    showBarTops={false}
+                                    fromZero={true}
+                                />
+                            </View>
+                        </View>
+                    </>
+                )}
             </ScrollView>
         </SafeAreaView>
     );

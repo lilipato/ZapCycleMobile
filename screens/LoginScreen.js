@@ -19,8 +19,14 @@ export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = () => {
+    if (!email || !password) {
+      setErrorMessage("Please enter both email and password.");
+      return;
+    }
+    setErrorMessage("");
     console.log("Login submitted:", { email, password });
     navigation.navigate("Main");
   };
@@ -55,6 +61,14 @@ export default function LoginScreen({ navigation }) {
             </View>
 
             <View style={tw`flex flex-col`}>
+              {/* Error Message */}
+              {errorMessage !== "" && (
+                <View style={tw`bg-red-50 p-3 rounded-xl mb-4 border border-red-100 flex-row items-center`}>
+                  <Feather name="alert-circle" size={16} color="#ef4444" style={tw`mr-2`} />
+                  <Text style={tw`text-red-600 text-sm font-medium`}>{errorMessage}</Text>
+                </View>
+              )}
+
               {/* Email Input */}
               <View style={tw`relative flex-row items-center border border-gray-200 rounded-2xl bg-white mb-4`}>
                 <View style={tw`absolute left-4 z-10`}>

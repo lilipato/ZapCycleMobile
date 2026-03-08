@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, SafeAreaView, TouchableOpacity, TextInput } from "react-native";
+import { View, Text, ScrollView, SafeAreaView, TouchableOpacity, TextInput, Alert } from "react-native";
 import tw from "twrnc";
 import { Feather } from "@expo/vector-icons";
 
@@ -7,9 +7,11 @@ export default function SettingsScreen({ navigation }) {
     const [email, setEmail] = useState("user@example.com");
     const [password, setPassword] = useState("");
     const [notifications, setNotifications] = useState(true);
+    const [saveMessage, setSaveMessage] = useState("");
 
     const handleSave = () => {
-        console.log("Settings saved!");
+        setSaveMessage("Settings saved successfully!");
+        setTimeout(() => setSaveMessage(""), 3000);
     };
 
     return (
@@ -79,6 +81,14 @@ export default function SettingsScreen({ navigation }) {
                         <Text style={tw`text-white font-semibold text-base`}>Manage Integrations</Text>
                     </TouchableOpacity>
                 </View>
+
+                {/* Success Message */}
+                {saveMessage !== "" && (
+                    <View style={tw`bg-green-100 p-3 rounded-xl mb-4 flex-row items-center border border-green-200`}>
+                        <Feather name="check-circle" size={18} color="#16a34a" style={tw`mr-2`} />
+                        <Text style={tw`text-green-700 font-medium`}>{saveMessage}</Text>
+                    </View>
+                )}
 
                 {/* Save Button */}
                 <TouchableOpacity
