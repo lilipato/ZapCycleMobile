@@ -10,6 +10,8 @@ import SignUpScreen from './screens/SignUpScreen';
 import DashboardScreen from './screens/DashboardScreen';
 import UsersScreen from './screens/UsersScreen';
 import SettingsScreen from './screens/SettingsScreen';
+import CollectorsScreen from './screens/CollectorsScreen';
+import PickupRequestsScreen from './screens/PickupRequestsScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -23,6 +25,10 @@ function MainTabNavigator() {
           let iconName;
           if (route.name === 'Dashboard') {
             iconName = 'layout';
+          } else if (route.name === 'Requests') {
+            iconName = 'inbox';
+          } else if (route.name === 'Collectors') {
+            iconName = 'truck';
           } else if (route.name === 'Users') {
             iconName = 'users';
           } else if (route.name === 'Settings') {
@@ -36,6 +42,8 @@ function MainTabNavigator() {
       })}
     >
       <Tab.Screen name="Dashboard" component={DashboardScreen} />
+      <Tab.Screen name="Requests" component={PickupRequestsScreen} />
+      <Tab.Screen name="Collectors" component={CollectorsScreen} />
       <Tab.Screen name="Users" component={UsersScreen} />
       <Tab.Screen name="Settings" component={SettingsScreen} />
     </Tab.Navigator>
