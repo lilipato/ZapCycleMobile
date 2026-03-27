@@ -3,19 +3,23 @@ import { View, Text, ScrollView, SafeAreaView, TouchableOpacity, Dimensions } fr
 import tw from "twrnc";
 import { Feather } from "@expo/vector-icons";
 import StatCard from "../components/StatCard";
-import { LineChart, PieChart } from "react-native-chart-kit";
+import { LineChart, PieChart } from "react-native-gifted-charts";
 
 const screenWidth = Dimensions.get("window").width;
 
-const requestTrendsData = {
-    labels: ["Oct", "Nov", "Dec", "Jan", "Feb", "Mar"],
-    datasets: [{ data: [45, 120, 185, 240, 310, 425] }]
-};
+const requestTrendsData = [
+    { label: "Oct", value: 45 },
+    { label: "Nov", value: 120 },
+    { label: "Dec", value: 185 },
+    { label: "Jan", value: 240 },
+    { label: "Feb", value: 310 },
+    { label: "Mar", value: 425 },
+];
 
 const categoryPieData = [
-    { name: "Working", population: 35, color: "#37B26C", legendFontColor: "#4b5563", legendFontSize: 12 },
-    { name: "Broken", population: 45, color: "#3b82f6", legendFontColor: "#4b5563", legendFontSize: 12 },
-    { name: "Scrap", population: 20, color: "#ef4444", legendFontColor: "#4b5563", legendFontSize: 12 },
+    { name: "Working", value: 35, color: "#37B26C" },
+    { name: "Broken", value: 45, color: "#3b82f6" },
+    { name: "Scrap", value: 20, color: "#ef4444" },
 ];
 
 const platformActivity = [
@@ -114,63 +118,55 @@ export default function DashboardScreen({ navigation }) {
                     </>
                 ) : (
                     <>
-                        {/* Line Chart Configured as AreaChart to match web */}
+                        {/* Line Chart Configured as AreaChart to match web exactly via gifted charts */}
                         <View style={tw`bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6`}>
                             <Text style={tw`text-base font-bold text-gray-900 mb-6`}>Platform Growth (Requests)</Text>
-                            <LineChart
-                                data={requestTrendsData}
-                                width={screenWidth - 85}
-                                height={250}
-                                chartConfig={{
-                                    backgroundGradientFrom: "#ffffff",
-                                    backgroundGradientTo: "#ffffff",
-                                    fillShadowGradientFrom: "#37B26C",
-                                    fillShadowGradientFromOpacity: 0.1,
-                                    fillShadowGradientTo: "#37B26C",
-                                    fillShadowGradientToOpacity: 0,
-                                    color: (opacity = 1) => `rgba(55, 178, 108, ${opacity})`,
-                                    labelColor: (opacity = 1) => `rgba(156, 163, 175, 1)`,
-                                    strokeWidth: 3,
-                                    propsForBackgroundLines: {
-                                        strokeDasharray: "3 3",
-                                        stroke: "#f0f0f0"
-                                    },
-                                    propsForDots: { r: "0" }
-                                }}
-                                bezier
-                                withDots={false}
-                                withVerticalLines={false}
-                                withInnerLines={true}
-                                withOuterLines={false}
-                                withShadow={true}
-                                style={{ marginLeft: -15 }}
-                            />
+                            <View style={tw`ml-[-20px] mr-[10px]`}>
+                                <LineChart
+                                    areaChart
+                                    data={requestTrendsData}
+                                    curved
+                                    startFillColor="#37B26C"
+                                    startOpacity={0.1}
+                                    endFillColor="#37B26C"
+                                    endOpacity={0}
+                                    color="#37B26C"
+                                    thickness={3}
+                                    originalDataPointRadius={0}
+                                    hideDataPoints
+                                    hideRules={false}
+                                    rulesType="dashed"
+                                    dashWidth={3}
+                                    dashGap={3}
+                                    rulesColor="#f0f0f0"
+                                    yAxisThickness={0}
+                                    xAxisThickness={0}
+                                    yAxisTextStyle={{ color: '#9ca3af', fontSize: 12 }}
+                                    xAxisLabelTextStyle={{ color: '#9ca3af', fontSize: 12 }}
+                                    initialSpacing={20}
+                                    spacing={(screenWidth - 100) / 5}
+                                />
+                            </View>
                         </View>
 
-                        {/* Pie Chart mimicking Recharts Donut with horizontal legends */}
+                        {/* Pie Chart exactly mimicking Recharts Donut */}
                         <View style={tw`bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6`}>
                             <Text style={tw`text-base font-bold text-gray-900 mb-6`}>Requests by Category</Text>
                             <View style={tw`items-center justify-center`}>
                                 <View style={tw`relative items-center justify-center`}>
                                     <PieChart
+                                        donut
+                                        innerRadius={60}
+                                        radius={80}
                                         data={categoryPieData}
-                                        width={screenWidth - 60}
-                                        height={200}
-                                        chartConfig={{
-                                            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                                        }}
-                                        accessor={"population"}
-                                        backgroundColor={"transparent"}
-                                        paddingLeft={((screenWidth - 60) / 4).toString()}
-                                        hasLegend={false}
-                                        absolute={false}
+                                        strokeWidth={5}
+                                        strokeColor="#ffffff"
+                                        centerLabelComponent={() => null}
                                     />
-                                    {/* White circle simulating innerRadius={60} Donut Chart */}
-                                    <View style={[tw`absolute bg-white rounded-full`, { width: 100, height: 100 }]} />
                                 </View>
 
-                                {/* Custom Horizontal Legend mimicking layout="horizontal" verticalAlign="bottom" */}
-                                <View style={tw`flex-row justify-center items-center mt-4 w-full flex-wrap`}>
+                                {/* Custom Horizontal Legend */}
+                                <View style={tw`flex-row justify-center items-center mt-6 w-full flex-wrap`}>
                                     {categoryPieData.map((category, idx) => (
                                         <View key={idx} style={tw`flex-row items-center mx-3 mb-2`}>
                                             <View style={[tw`w-3 h-3 rounded-full mr-2`, { backgroundColor: category.color }]} />
