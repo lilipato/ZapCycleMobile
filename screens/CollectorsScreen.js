@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, SafeAreaView, TouchableOpacity, TextInput, FlatList, Modal } from "react-native";
+import { View, Text, ScrollView, SafeAreaView, TouchableOpacity, TextInput, FlatList, Modal, KeyboardAvoidingView, Platform } from "react-native";
 import tw from "twrnc";
 import { Feather } from "@expo/vector-icons";
 import ConfirmationModal from "../components/ConfirmationModal";
@@ -214,51 +214,60 @@ export default function CollectorsScreen({ navigation }) {
 
             {/* Edit Modal */}
             <Modal transparent={true} visible={showEditModal} animationType="slide">
-                <View style={tw`flex-1 justify-end bg-black/50`}>
-                    <View style={tw`bg-white rounded-t-3xl p-6 shadow-xl w-full`}>
-                        <View style={tw`flex-row justify-between items-center mb-5`}>
-                            <Text style={tw`text-xl font-bold text-gray-900`}>Update Collector</Text>
-                            <TouchableOpacity onPress={() => setShowEditModal(false)} style={tw`p-2 rounded-full bg-gray-100`}>
-                                <Feather name="x" size={20} color="#6b7280" />
+                <KeyboardAvoidingView
+                    style={tw`flex-1 justify-end`}
+                    behavior={Platform.OS === "ios" ? "padding" : "height"}
+                    keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
+                >
+                    <View style={tw`flex-1 justify-end bg-black/50`}>
+                        <View style={tw`bg-white rounded-t-3xl p-6 shadow-xl w-full`}>
+                            <View style={tw`flex-row justify-between items-center mb-5`}>
+                                <Text style={tw`text-xl font-bold text-gray-900`}>Update Collector</Text>
+                                <TouchableOpacity onPress={() => setShowEditModal(false)} style={tw`p-2 rounded-full bg-gray-100`}>
+                                    <Feather name="x" size={20} color="#6b7280" />
+                                </TouchableOpacity>
+                            </View>
+
+                            <View style={tw`space-y-4`}>
+                                <View>
+                                    <Text style={tw`text-xs font-bold text-gray-400 uppercase ml-1 mb-1`}>Contact Person</Text>
+                                    <TextInput
+                                        value={formData.name}
+                                        onChangeText={(text) => setFormData(prev => ({ ...prev, name: text }))}
+                                        style={tw`w-full px-4 py-3 rounded-xl border border-gray-200 text-gray-800 text-base`}
+                                        returnKeyType="next"
+                                    />
+                                </View>
+                                <View style={tw`mt-4`}>
+                                    <Text style={tw`text-xs font-bold text-gray-400 uppercase ml-1 mb-1`}>Business Name</Text>
+                                    <TextInput
+                                        value={formData.business}
+                                        onChangeText={(text) => setFormData(prev => ({ ...prev, business: text }))}
+                                        style={tw`w-full px-4 py-3 rounded-xl border border-gray-200 text-gray-800 text-base`}
+                                        returnKeyType="next"
+                                    />
+                                </View>
+                                <View style={tw`mt-4`}>
+                                    <Text style={tw`text-xs font-bold text-gray-400 uppercase ml-1 mb-1`}>Contact Number</Text>
+                                    <TextInput
+                                        value={formData.contact}
+                                        onChangeText={(text) => setFormData(prev => ({ ...prev, contact: text }))}
+                                        style={tw`w-full px-4 py-3 rounded-xl border border-gray-200 text-gray-800 text-base`}
+                                        keyboardType="phone-pad"
+                                        returnKeyType="done"
+                                    />
+                                </View>
+                            </View>
+
+                            <TouchableOpacity
+                                onPress={handleEditSubmit}
+                                style={tw`w-full bg-green-500 py-4 items-center rounded-xl mt-6 mb-4 shadow-md`}
+                            >
+                                <Text style={tw`text-white font-bold text-base`}>Update Information</Text>
                             </TouchableOpacity>
                         </View>
-
-                        <View style={tw`space-y-4`}>
-                            <View>
-                                <Text style={tw`text-xs font-bold text-gray-400 uppercase ml-1 mb-1`}>Contact Person</Text>
-                                <TextInput
-                                    value={formData.name}
-                                    onChangeText={(text) => setFormData(prev => ({ ...prev, name: text }))}
-                                    style={tw`w-full px-4 py-3 rounded-xl border border-gray-200 text-gray-800 text-base`}
-                                />
-                            </View>
-                            <View style={tw`mt-4`}>
-                                <Text style={tw`text-xs font-bold text-gray-400 uppercase ml-1 mb-1`}>Business Name</Text>
-                                <TextInput
-                                    value={formData.business}
-                                    onChangeText={(text) => setFormData(prev => ({ ...prev, business: text }))}
-                                    style={tw`w-full px-4 py-3 rounded-xl border border-gray-200 text-gray-800 text-base`}
-                                />
-                            </View>
-                            <View style={tw`mt-4`}>
-                                <Text style={tw`text-xs font-bold text-gray-400 uppercase ml-1 mb-1`}>Contact Number</Text>
-                                <TextInput
-                                    value={formData.contact}
-                                    onChangeText={(text) => setFormData(prev => ({ ...prev, contact: text }))}
-                                    style={tw`w-full px-4 py-3 rounded-xl border border-gray-200 text-gray-800 text-base`}
-                                    keyboardType="phone-pad"
-                                />
-                            </View>
-                        </View>
-
-                        <TouchableOpacity
-                            onPress={handleEditSubmit}
-                            style={tw`w-full bg-green-500 py-4 items-center rounded-xl mt-6 mb-4 shadow-md`}
-                        >
-                            <Text style={tw`text-white font-bold text-base`}>Update Information</Text>
-                        </TouchableOpacity>
                     </View>
-                </View>
+                </KeyboardAvoidingView>
             </Modal>
         </SafeAreaView>
     );
